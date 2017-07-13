@@ -1,4 +1,5 @@
 #echo_server.py
+
 import socket
 import select
 import threading
@@ -42,14 +43,14 @@ def search(dbpath, querystring, offset=0, pagesize=10):
 			'rank' : match.rank + 1,
 			'docid' : match.docid,
 			'title' : fields.get('TITLE', u''),
- 			}
- 		ret += tmp
+			}
+		ret += tmp
  		ret += '\n'
 		matches.append(match.docid)
 	support.log_matches(querystring, offset, pagesize, matches)
 	return ret
 
-	### END of function
+### END of function
 
 def process_request(request, addr):
 	while 1:
@@ -61,20 +62,19 @@ def process_request(request, addr):
 		request.sendall(tmp)
 	request.close()
 
-
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.setblocking(0)
 server.bind(ADDR)
 server.listen(1)
 
 while 1:
-    # data is a string received from socket.
-    r,w,e = select.select([s],[],[],0.5)
-    if server in r:
-    	conn, addr = server.accept()
-    	THREAD_NUM += 1
-    	print('Connected by', addr)
-    	t = threading.Thread(target = process_request,
-    						name = 'server process thread '+str(THREAD_NUM),
-    						args = (conn, addr))
-    	t.start()
+	# data is a string received from socket.
+	r,w,e = select.select([server],[],[],0.5)
+	if server in r:
+		conn, addr = server.accept()
+		THREAD_NUM += 1
+		print('Connected by', addr)
+		t = threading.Thread(target = process_request,
+							name = 'server process thread '+str(THREAD_NUM),
+							args = (conn, addr))
+		t.start()
